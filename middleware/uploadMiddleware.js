@@ -17,9 +17,13 @@ const fs = require('fs');
  * @param {string} dirPath - Directory path
  */
 const ensureDirectoryExists = (dirPath) => {
-  if (!fs.existsSync(dirPath)) {
-    fs.mkdirSync(dirPath, { recursive: true });
-    console.log(`📁 Created directory: ${dirPath}`);
+  try {
+    if (!fs.existsSync(dirPath)) {
+      fs.mkdirSync(dirPath, { recursive: true });
+      console.log(`📁 Created directory: ${dirPath}`);
+    }
+  } catch (error) {
+    console.warn(`⚠️ Could not create directory: ${dirPath}`);
   }
 };
 
@@ -30,8 +34,10 @@ const UPLOAD_PATHS = {
   temp: path.join(__dirname, '../public/uploads/temp'),
 };
 
-// Create all upload directories
-Object.values(UPLOAD_PATHS).forEach(ensureDirectoryExists);
+// Create directories only in development
+if (process.env.NODE_ENV !== 'production') {
+  Object.values(UPLOAD_PATHS).forEach(ensureDirectoryExists);
+}
 
 // ─────────────────────────────────────────────
 // STORAGE CONFIGURATIONS
